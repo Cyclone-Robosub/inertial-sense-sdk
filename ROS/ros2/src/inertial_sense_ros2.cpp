@@ -27,6 +27,7 @@
 #include <memory>
 #include <boost/chrono/duration.hpp>
 
+
 //#include "ISMatrix.h"
 
 #include "ParamHelper.h"
@@ -684,8 +685,8 @@ bool InertialSenseROS::connect(float timeout)
         RCLCPP_INFO(rclcpp::get_logger("connect_to_serial"),"InertialSenseROS: Connecting to serial port \"%s\", at %d baud", cur_port.c_str(), baudrate_);
         sdk_connected_ = IS_.Open(cur_port.c_str(), baudrate_);
         if (!sdk_connected_) {
-            RCLCPP_ERROR(rclcpp::get_logger("open_port_error"),"InertialSenseROS: Unable to open serial port \"%s\", at %d baud", cur_port.c_str(), baudrate_);
-            sleep(1); // is this a good idea?
+            RCLCPP_ERROR(rclcpp::get_logger("open_port_error"),"InertialSenseROS: Unable to open serial port \"%s\", at %d baud, Will try again in 5", cur_port.c_str(), baudrate_);
+            sleep(5); // is this a good idea?
         } else {
             RCLCPP_INFO(rclcpp::get_logger("serial_port_connected_info"),"InertialSenseROS: Connected to IMX SN%d on \"%s\", at %d baud", IS_.DeviceInfo().serialNumber, cur_port.c_str(), baudrate_);
             port_ = cur_port;
