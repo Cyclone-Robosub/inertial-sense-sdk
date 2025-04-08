@@ -35,22 +35,27 @@ int main(int argc, char**argv)
     if (true)
     {
         std::string paramYamlPath = "topic: \"inertialsense\"\n"
-                       "port: [/dev/ttyACM1, /dev/ttyACM2]\n"
+                       "port: [/dev/ttyACM0, /dev/ttyACM1, /dev/ttyACM2]\n"
                        "baudrate: 921600\n"
                        "\n"
                        "ins:\n"
-                       "  navigation_dt_ms: 16                          # EKF update period.  uINS-3: 4  default, 1 max.  Use `msg/ins.../period` to reduce INS output data rate."
+                       "  navigation_dt_ms: 16\n"
+                       "  messages:\n"
+                       "    odom_ins_enu:\n"
+                       "      topic: \"odom_ins_enu\"\n"
+                       "      enable: true\n"
                        "\n"
                        "sensors:\n"
                        "  messages:  \n"
-                       "    pimu:             # Publish preintegrated IMU delta theta and delta velocity\n"
+                       "    imu:\n"
+                       "      topic: \"imu\"\n"
+                       "      enable: true\n"
+                       "      period: 1\n"
+                       "    pimu:\n"
                        "      topic: \"pimu\"\n"
                        "      enable: true\n"
                        "      period: 1\n"
-                       "    imu:              # Publish IMU angular rates and linear acceleration\n"
-                       "      topic: \"imu\"\n"
-                       "      enable: true\n"
-                       "      period: 1\n";
+                       "\n";
         std::cout << "\n\nLoading YAML paramfile: " << paramYamlPath << "\n\n";
         YAML::Node node;
         try

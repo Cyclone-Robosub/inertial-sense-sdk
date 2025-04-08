@@ -55,6 +55,8 @@ InertialSenseROS::InertialSenseROS(YAML::Node paramNode, bool configFlashParamet
     rs_.did_ins1.topic = "did_ins1";
     rs_.gps1.enabled = true;
     rs_.gps1.topic = "/gps";
+    rs_.imu.topic = "imu";
+    rs_.imu.enabled = true;
 
    //if (ros::console::set_logger_level(ROSCONSOLE_DEFAULT_NAME, ros::console::levels::Debug))
    //{
