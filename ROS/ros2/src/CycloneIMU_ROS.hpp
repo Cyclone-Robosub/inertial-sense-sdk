@@ -17,7 +17,7 @@ class CycloneIMU_ROS : public rclcpp::Node {
       rclcpp::init(random, random1);
         std::cout << "Found InitIMU.yaml" << std::endl;
     std::string IMUyamlconfig = "topic: \"inertialsense\"\n"
-                       "port: [/dev/ttyACM0, /dev/ttyACM1, /dev/ttyACM2]\n"
+                       "port: [/dev/ttyACM1]\n"
                        "baudrate: 921600\n"
                        "\n"
                        "ins:\n"
