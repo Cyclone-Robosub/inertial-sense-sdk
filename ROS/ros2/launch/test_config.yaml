@@ -112,13 +112,7 @@ sensors:
       topic: "mag"
       enable: true
       period: 1
-    barometer:
-      topic: "baro"
-      enable: true
-      period: 1
-    strobe_in:      # Publish the strobe input time
-      topic: "strobe_in"
-      enable: true
+
 
 gps1:
   type: 'F9P'
