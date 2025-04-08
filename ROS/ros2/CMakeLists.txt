@@ -89,7 +89,6 @@ add_executable(${PROJECT_NAME}_node
     shared/src/inertial_sense_node.cpp
     shared/src/ParamHelper.cpp
     shared/src/RtkRover.cpp
-    src/CycloneIMU_ROS.hpp
     shared/src/RtkBase.cpp
 )
 rosidl_get_typesupport_target(cpp_typesupport_target "${PROJECT_NAME}" "rosidl_typesupport_cpp")

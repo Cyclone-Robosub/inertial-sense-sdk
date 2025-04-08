@@ -10,3 +10,8 @@ void CycloneIMU_ROS::IMURead(const sensor_msgs::msg::Imu &imu){
     linear_acceleration_z = imu.linear_acceleration.z;
     std::cout << angular_velocity_x << std::endl;
 }
+int main(){
+    std::cout << "Here" << std::endl;
+    CycloneIMU_ROS startup();
+    return 0;
+}

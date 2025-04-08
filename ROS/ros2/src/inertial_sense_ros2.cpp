@@ -231,7 +231,7 @@ void InertialSenseROS::load_params(YAML::Node &node)
         for (auto it = portNode.begin(); it != portNode.end(); it++)
             ports_.push_back((*it).as<std::string>());
     } else if (portNode.IsScalar()) {
-        std::string param = nh_->declare_parameter<std::string>("port", "/dev/ttyACM0");
+        std::string param = nh_->declare_parameter<std::string>("port", "/dev/ttyACM1");
         ph.nodeParam("port", param, param);
         ports_.push_back(param);
     }
@@ -239,7 +239,7 @@ void InertialSenseROS::load_params(YAML::Node &node)
     if(ports_.size() < 1)
     {
         //No ports specified. Use default
-        std::string param_1 = nh_->declare_parameter<std::string>("port_1", "/dev/ttyACM0");
+        std::string param_1 = nh_->declare_parameter<std::string>("port_1", "/dev/ttyACM1");
         ph.nodeParam("port_1", param_1, param_1);
         ports_.push_back(param_1);
     }
