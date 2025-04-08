@@ -37,6 +37,7 @@ class CycloneIMU_ROS : public rclcpp::Node {
       if(config.IsDefined()){
       InertialSenseROS IMUROS(config);
       IMUROS.initialize();
+      IMUROS.update();
       }else{
         std::cerr << "problem with yaml for ROS." << std::endl;
       }
