@@ -35,7 +35,7 @@ int main(int argc, char**argv)
     if (true)
     {
         std::string paramYamlPath = "topic: \"inertialsense\"\n"
-                       "port: [/dev/ttyACM1]\n"
+                       "port: [/dev/ttyACM1, /dev/ttyACM2]\n"
                        "baudrate: 921600\n"
                        "\n"
                        "ins:\n"
@@ -47,9 +47,9 @@ int main(int argc, char**argv)
                        "      topic: \"pimu\"\n"
                        "      enable: true\n"
                        "      period: 1\n"
-                       "    imu:              # Publish IMU angular rates and linear acceleration \n"
+                       "    imu:              # Publish IMU angular rates and linear acceleration\n"
                        "      topic: \"imu\"\n"
-                       "      enable: \"true\"\n"
+                       "      enable: true\"\n"
                        "      period: 1\n";
         std::cout << "\n\nLoading YAML paramfile: " << paramYamlPath << "\n\n";
         YAML::Node node;

@@ -692,9 +692,9 @@ bool InertialSenseROS::connect(float timeout)
             port_ = cur_port;
             break;
         }
-        if ((ports_.size() > 1) && (ports_iterator != ports_.end()))
-        std::cout << :"actually trying to do something" << std::endl;
-            ports_iterator++;
+        if ((ports_.size() > 1) && (ports_iterator != ports_.end())){
+        std::cout << "actually trying to do something" << std::endl;
+            ports_iterator++;}
         else
             ports_iterator = ports_.begin(); // just keep looping until we timeout below
     } while (nh_->now().seconds() < end_time);
