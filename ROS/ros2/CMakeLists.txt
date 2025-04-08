@@ -88,6 +88,9 @@ add_executable(${PROJECT_NAME}_node
     src/inertial_sense_ros2.cpp
     shared/src/inertial_sense_node.cpp
     shared/src/ParamHelper.cpp
+    shared/src/RtkRover.cpp
+    shared/src/RtkBase.cpp
+
 )
 rosidl_get_typesupport_target(cpp_typesupport_target "${PROJECT_NAME}" "rosidl_typesupport_cpp")
 target_link_libraries(${PROJECT_NAME}_node "${cpp_typesupport_target}")
