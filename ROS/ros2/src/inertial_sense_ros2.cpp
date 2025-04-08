@@ -57,6 +57,8 @@ InertialSenseROS::InertialSenseROS(YAML::Node paramNode, bool configFlashParamet
     rs_.gps1.topic = "/gps";
     rs_.imu.topic = "imu";
     rs_.imu.enabled = true;
+    rs_.magnetometer.enabled = true;
+    rs_.magnetometer.topic = "magtopic";
 
    //if (ros::console::set_logger_level(ROSCONSOLE_DEFAULT_NAME, ros::console::levels::Debug))
    //{
@@ -233,7 +235,7 @@ void InertialSenseROS::load_params(YAML::Node &node)
         for (auto it = portNode.begin(); it != portNode.end(); it++)
             ports_.push_back((*it).as<std::string>());
     } else if (portNode.IsScalar()) {
-        std::string param = nh_->declare_parameter<std::string>("port", "/dev/ttyACM1");
+        std::string param = nh_->declare_parameter<std::string>("port", "/dev/ttyACM0");
         ph.nodeParam("port", param, param);
         ports_.push_back(param);
     }
@@ -241,7 +243,7 @@ void InertialSenseROS::load_params(YAML::Node &node)
     if(ports_.size() < 1)
     {
         //No ports specified. Use default
-        std::string param_1 = nh_->declare_parameter<std::string>("port_1", "/dev/ttyACM1");
+        std::string param_1 = nh_->declare_parameter<std::string>("port_1", "/dev/ttyACM0");
         ph.nodeParam("port_1", param_1, param_1);
         ports_.push_back(param_1);
     }

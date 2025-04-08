@@ -34,7 +34,8 @@ int main(int argc, char**argv)
     //auto nh_ = std::make_shared<rclcpp::Node>("nh_");
     if (true)
     {
-        std::string paramYamlPath = "topic: \"inertialsense\"\n"
+        std::ifstream paramYamlPath("../../launch/test_config.yaml");
+        std::string paramsomethingYamlPath = "topic: \"inertialsense\"\n"
                        "port: [/dev/ttyACM0, /dev/ttyACM1, /dev/ttyACM2]\n"
                        "baudrate: 921600\n"
                        "\n"
@@ -56,7 +57,7 @@ int main(int argc, char**argv)
                        "      enable: true\n"
                        "      period: 1\n"
                        "\n";
-        std::cout << "\n\nLoading YAML paramfile: " << paramYamlPath << "\n\n";
+        //std::cout << "\n\nLoading YAML paramfile: " << paramYamlPath << "\n\n";
         YAML::Node node;
         try
         {
