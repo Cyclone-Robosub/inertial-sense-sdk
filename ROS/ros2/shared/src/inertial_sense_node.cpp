@@ -49,7 +49,7 @@ int main(int argc, char**argv)
                        "      period: 1\n"
                        "    imu:              # Publish IMU angular rates and linear acceleration\n"
                        "      topic: \"imu\"\n"
-                       "      enable: true\"\n"
+                       "      enable: true\n"
                        "      period: 1\n";
         std::cout << "\n\nLoading YAML paramfile: " << paramYamlPath << "\n\n";
         YAML::Node node;
