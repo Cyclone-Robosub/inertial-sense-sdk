@@ -51,10 +51,6 @@ void odometryIdentity(nav_msgs::msg::Odometry& msg_odom) {
 InertialSenseROS::InertialSenseROS(YAML::Node paramNode, bool configFlashParameters): nh_(rclcpp::Node::make_shared("nh_"))
 {
     // Should always be enabled by default
-    rs_.did_ins1.enabled = true;
-    rs_.did_ins1.topic = "did_ins1";
-    rs_.gps1.enabled = true;
-    rs_.gps1.topic = "/gps";
     rs_.imu.topic = "imu";
     rs_.imu.enabled = true;
     rs_.magnetometer.enabled = true;
