@@ -54,7 +54,7 @@ InertialSenseROS::InertialSenseROS(YAML::Node paramNode, bool configFlashParamet
     rs_.imu.topic = "imu";
     rs_.imu.enabled = true;
     rs_.magnetometer.enabled = true;
-    rs_.magnetometer.topic = "magtopic";
+    rs_.magnetometer.topic = "mag";
 
    //if (ros::console::set_logger_level(ROSCONSOLE_DEFAULT_NAME, ros::console::levels::Debug))
    //{
