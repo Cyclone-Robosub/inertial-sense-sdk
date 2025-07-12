@@ -55,12 +55,15 @@ InertialSenseROS::InertialSenseROS(YAML::Node paramNode, bool configFlashParamet
     rs_.imu.enabled = true;
     rs_.magnetometer.enabled = true;
     rs_.magnetometer.topic = "mag";
+    rs_.odom_ins_ned.enabled = true;
+	rs_.odom_ins_ned.topic = "roll_pitch_yaw";
 
-   //if (ros::console::set_logger_level(ROSCONSOLE_DEFAULT_NAME, ros::console::levels::Debug))
-   //{
-   //    ros::console::notifyLoggerLevelsChanged();
-   //}
-    load_params(paramNode);
+        // if (ros::console::set_logger_level(ROSCONSOLE_DEFAULT_NAME,
+        // ros::console::levels::Debug))
+        //{
+        //     ros::console::notifyLoggerLevelsChanged();
+        // }
+            load_params(paramNode);
 }
 
 void InertialSenseROS::initialize(bool configFlashParameters)
