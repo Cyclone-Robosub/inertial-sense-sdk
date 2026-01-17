@@ -17,7 +17,6 @@
  ***************************************************************************************/
 
 #include "inertial_sense_ros.h"
-#define PARAM_YAML_FILE "../../launch/test_config.yaml"
 #ifdef ROS2
 using namespace rclcpp;
 #endif
@@ -98,7 +97,7 @@ int main(int argc, char**argv)
         }
         catch (const YAML::BadFile &bf)
         {
-            std::cout << "Loading file \"" << paramsomethingYamlString << "\" failed.  Using default parameters.\n\n";
+            std::cout << "Loading file \"" << paramYamlPath << "\" failed.  Using default parameters.\n\n";
             node = YAML::Node(YAML::NodeType::Undefined);
         }
 

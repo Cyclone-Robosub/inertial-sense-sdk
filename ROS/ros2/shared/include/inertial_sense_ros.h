@@ -112,8 +112,8 @@ using namespace std::chrono_literals;
 #define LEAP_SECONDS 18           // GPS time does not have leap seconds, UNIX does (as of 1/1/2017 - next one is probably in 2020 sometime unless there is some crazy earthquake or nuclear blast)
 #define UNIX_TO_GPS_OFFSET (GPS_UNIX_OFFSET - LEAP_SECONDS)
 #define REPO_VERSION_MAJOR 2
-#define REPO_VERSION_MINOR 2   // [UPDATE_RELEASE_VERSION_HERE] The repo/firmware version should originate from git tag (like repositoryInfo.h used in EvalTool).  For now we set these manually.
-#define REPO_VERSION_REVIS 2
+#define REPO_VERSION_MINOR 5   // [UPDATE_RELEASE_VERSION_HERE] The repo/firmware version should originate from git tag (like repositoryInfo.h used in EvalTool).  For now we set these manually.
+#define REPO_VERSION_REVIS 0
 
 #define SET_CALLBACK(DID, __type, __cb_fun, __periodmultiple)                               \
     IS_.BroadcastBinaryData((DID), (__periodmultiple),                                      \
@@ -138,7 +138,6 @@ public:
     } NMEA_message_config_t;
 
     InertialSenseROS(YAML::Node paramNode = YAML::Node(YAML::NodeType::Undefined), bool configFlashParameters = true);
-
    ~InertialSenseROS() { terminate(); }
 
     void initializeIS(bool configFlashParameters = true);
@@ -260,6 +259,7 @@ public:
     void mag_callback(eDataIDs DID, const magnetometer_t *const msg);
     void baro_callback(eDataIDs DID, const barometer_t *const msg);
     void preint_IMU_callback(eDataIDs DID, const pimu_t *const msg);
+    void imu_raw_callback(eDataIDs DID, const imu_t *const msg);
     void strobe_in_time_callback(eDataIDs DID, const strobe_in_time_t *const msg);
     void diagnostics_callback( ROS1_TIMEREVENT_ARG );
     void GPS_pos_callback(eDataIDs DID, const gps_pos_t *const msg);
@@ -297,6 +297,7 @@ public:
         TopicHelper inl2_states;
 
         TopicHelper imu;
+        TopicHelper imu_raw;
         TopicHelper pimu;
         TopicHelper magnetometer;
         TopicHelper barometer;
@@ -478,6 +479,7 @@ public:
     nav_msgs::msg::Odometry msg_odom_enu;
     msg::INL2States msg_inl2_states;
     sensor_msgs::msg::Imu msg_imu;
+    sensor_msgs::msg::Imu msg_imu_raw;
     msg::PIMU msg_pimu;
     msg::GPS msg_gps1;
     msg::GPS msg_gps2;
