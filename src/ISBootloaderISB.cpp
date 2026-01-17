@@ -20,6 +20,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 #include "ISBootloaderISB.h"
 #include "ISUtilities.h"
+#include "intel_hex_utils.h"
 
 #include <algorithm>
 
@@ -66,7 +67,7 @@ eImageSignature cISBootloaderISB::check_is_compatible()
 
     serialPortFlush(m_port);
     serialPortRead(m_port, buf, sizeof(buf));    // empty Rx buffer
-    handshake_sync(m_port);
+    bool handshake = handshake_sync(m_port) == IS_OP_OK;
 
     SLEEP_MS(100);
 
@@ -101,6 +102,8 @@ eImageSignature cISBootloaderISB::check_is_compatible()
     uint8_t processor = 0xFF;
     m_isb_props.is_evb = false;
     m_sn = 0;
+
+    m_info_callback(NULL, IS_LOG_LEVEL_INFO, "    | (ISB) %s, bootloader v%d%c", (handshake ? "handshake" : "no handshake"), m_isb_major, m_isb_minor);
 
     if(buf[11] == '.' && buf[12] == '\r' && buf[13] == '\n')
     {   // Valid packet found
@@ -239,7 +242,7 @@ is_operation_result cISBootloaderISB::reboot()
 
 uint32_t cISBootloaderISB::get_device_info()
 {
-    handshake_sync(m_port);
+    bool handshake = handshake_sync(m_port) == IS_OP_OK;
     serialPortFlush(m_port);
 
 	// Send command
@@ -266,6 +269,8 @@ uint32_t cISBootloaderISB::get_device_info()
     m_isb_major = buf[2];
     m_isb_minor = (char)buf[3];
     m_isb_props.rom_available = buf[4];
+
+    m_info_callback(NULL, IS_LOG_LEVEL_INFO, "    | (ISB) %s, bootloader v%d%c", (handshake ? "handshake" : "no handshake"), m_isb_major, m_isb_minor);
 
     if(buf[11] == '.' && buf[12] == '\r' && buf[13] == '\n')
     {
@@ -321,7 +326,6 @@ is_operation_result cISBootloaderISB::handshake_sync(serial_port_t* s)
 
         if (serialPortWaitForTimeout(s, &handshakerChar, 1, BOOTLOADER_RESPONSE_DELAY))
         {	// Success
-            status_update("(ISB) Handshake", IS_LOG_LEVEL_INFO);
             return IS_OP_OK;
         }
     }
@@ -340,7 +344,6 @@ is_operation_result cISBootloaderISB::handshake_sync(serial_port_t* s)
     }
 #endif
 
-    status_update("(ISB) Handshake w/o response", IS_LOG_LEVEL_INFO);
     return IS_OP_ERROR;
 }
 
@@ -419,7 +422,14 @@ is_operation_result cISBootloaderISB::select_page(int page)
     checksum(0, changePage, 1, 17, 17, 1);
     if (serialPortWriteAndWaitForTimeout(s, changePage, 19, (unsigned char*)".\r\n", 3, BOOTLOADER_TIMEOUT_DEFAULT) == 0) 
     {
-        status_update("(ISB) Failed to select page", IS_LOG_LEVEL_ERROR);
+        if (page == 7) 
+        {   // IMX-5 bootloader prior to v6i does not support writing to 8th page of flash memory
+            status_update("(ISB) PAGE SELECTION FAILED: " IMX5_BOOTLOADER_INCOMPATIBLE_MSG "\n", IS_LOG_LEVEL_ERROR);
+        }
+        else
+        {
+            status_update("(ISB) Failed to select page", IS_LOG_LEVEL_ERROR);
+        }
         return IS_OP_ERROR;
     }
 
@@ -588,16 +598,24 @@ is_operation_result cISBootloaderISB::fill_current_page(int* currentPage, int* c
 {
     (void)currentPage;
 
+    if (*currentPage >= 7)
+    {
+        int i = 0;
+        i++;
+    }
+
     if (*currentOffset < FLASH_PAGE_SIZE)
     {
         unsigned char hexData[256];
         memset(hexData, 'F', 256);
 
-        // FIXME: This isn't okay... We have about 32k of additional flash that we can't access because is not the 65k "logical" page size.
-        //  This function should recognize when we are on the last page, and how many bytes are in that page if its not a full page and handle things accordingly.
-        //  until then, we'll return OK in the error condition below, because the bootloader won't let us write out of bounds anyway...
         while (*currentOffset < FLASH_PAGE_SIZE)
         {
+            if (*currentPage == 7 && *currentOffset >= 36480)
+            {   // The last (8th) page of flash memory on the IMX-5 (STM32L4) is restricted to 36480 bytes.  We should NOT fill beyond this point on the 8th page.
+                break;
+            }
+
             int byteCount = (FLASH_PAGE_SIZE - *currentOffset) * 2;
             if (byteCount > 256)
             {
@@ -608,7 +626,7 @@ is_operation_result cISBootloaderISB::fill_current_page(int* currentPage, int* c
             if (upload_hex_page(hexData, byteCount / 2, currentOffset, totalBytes, verifyCheckSum) != IS_OP_OK)
             {
                 status_update("(ISB) Failed to fill page with bytes", IS_LOG_LEVEL_ERROR);
-                return IS_OP_OK; // FIXME - this should actually be an error
+                return IS_OP_ERROR ;
             }
         }
     }

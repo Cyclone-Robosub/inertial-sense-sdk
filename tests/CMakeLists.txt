@@ -28,6 +28,8 @@ file(GLOB TESTS_SOURCES "${CMAKE_CURRENT_LIST_DIR}/test_*.cpp")
 list(FILTER TESTS_SOURCES EXCLUDE REGEX "test_com_manager_2.cpp")
 if(WIN32)   # These do not run in Windows
     list(FILTER TESTS_SOURCES EXCLUDE REGEX "test_time_conversion.cpp")
+    # yamlcpp needs to know it's a static lib
+    add_definitions(-DYAML_CPP_STATIC_DEFINE)
 endif()
 
 # Define the executable
@@ -42,20 +44,11 @@ add_executable(${PROJECT_NAME}
     # test_time_conversion.cpp    
     # test_runtime_tests.cpp
     # test_data_utils.cpp
+    # test_ISDataMappings.cpp
 )
 
 if(WIN32)   # Windows
-    # Check if VCPKG_ROOT is defined
-    if(NOT DEFINED ENV{VCPKG_ROOT})
-        message(FATAL_ERROR "The environment variable VCPKG_ROOT is not defined. Please run install_buiild_tools.bat or set it to the path of your vcpkg installation.")
-    endif()
-
-    # Use the VCPKG_ROOT system variable
-    set(VCPKG_PATH $ENV{VCPKG_ROOT})
-    set(GTEST_LIBRARY "${VCPKG_PATH}/installed/x64-windows/lib/gtest.lib")
-    set(GTEST_MAIN_LIBRARY "${VCPKG_PATH}/installed/x64-windows/lib/manual-link/gtest_main.lib")
-    target_link_directories(${PROJECT_NAME} PRIVATE "${VCPKG_PATH}/installed/x64-windows/lib/manual-link")
-    set(PROJECT_PLATFORM_LIBS ${GTEST_LIBRARY} ${GTEST_MAIN_LIBRARY} GTest::GTest GTest::Main)
+    set(PROJECT_PLATFORM_LIBS GTest::GTest GTest::Main)
 else()      # Linux
     set(PROJECT_PLATFORM_LIBS gtest_main ${GTEST_LIBRARIES} udev pthread m)
 endif()
