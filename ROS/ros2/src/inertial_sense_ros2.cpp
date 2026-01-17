@@ -27,6 +27,7 @@
 #include <memory>
 #include <boost/chrono/duration.hpp>
 
+
 //#include "ISMatrix.h"
 
 #include "ParamHelper.h"
@@ -50,17 +51,19 @@ void odometryIdentity(nav_msgs::msg::Odometry& msg_odom) {
 InertialSenseROS::InertialSenseROS(YAML::Node paramNode, bool configFlashParameters): nh_(rclcpp::Node::make_shared("nh_"))
 {
     // Should always be enabled by default
-    rs_.did_ins1.enabled = true;
-    rs_.did_ins1.topic = "did_ins1";
+    rs_.imu.topic = "imu";
+    rs_.imu.enabled = true;
     rs_.magnetometer.enabled = true;
     rs_.magnetometer.topic = "mag";
-    rs_.imu.enabled = true;
-    rs_.imu.topic = "imu";
+    rs_.odom_ins_ned.enabled = true;
+	rs_.odom_ins_ned.topic = "roll_pitch_yaw";
 
-   //if (ros::console::set_logger_level(ROSCONSOLE_DEFAULT_NAME, ros::console::levels::Debug))
-   //{
-   //    ros::console::notifyLoggerLevelsChanged();
-   //}
+        // if (ros::console::set_logger_level(ROSCONSOLE_DEFAULT_NAME,
+        // ros::console::levels::Debug))
+        //{
+        //     ros::console::notifyLoggerLevelsChanged();
+        // }
+            load_params(paramNode);
 }
 
 void InertialSenseROS::initialize(bool configFlashParameters)
@@ -691,15 +694,16 @@ bool InertialSenseROS::connect(float timeout)
         RCLCPP_INFO(rclcpp::get_logger("connect_to_serial"),"InertialSenseROS: Connecting to serial port \"%s\", at %d baud", cur_port.c_str(), baudrate_);
         sdk_connected_ = IS_.Open(cur_port.c_str(), baudrate_);
         if (!sdk_connected_) {
-            RCLCPP_ERROR(rclcpp::get_logger("open_port_error"),"InertialSenseROS: Unable to open serial port \"%s\", at %d baud", cur_port.c_str(), baudrate_);
+            RCLCPP_ERROR(rclcpp::get_logger("open_port_error"),"InertialSenseROS: Unable to open serial port \"%s\", at %d baud, Will try again in 1", cur_port.c_str(), baudrate_);
             sleep(1); // is this a good idea?
         } else {
             RCLCPP_INFO(rclcpp::get_logger("serial_port_connected_info"),"InertialSenseROS: Connected to IMX SN%d on \"%s\", at %d baud", IS_.DeviceInfo().serialNumber, cur_port.c_str(), baudrate_);
             port_ = cur_port;
             break;
         }
-        if ((ports_.size() > 1) && (ports_iterator != ports_.end()))
-            ports_iterator++;
+        if ((ports_.size() > 1) && (ports_iterator != ports_.end())){
+        std::cout << "actually trying to do something" << std::endl;
+            ports_iterator++;}
         else
             ports_iterator = ports_.begin(); // just keep looping until we timeout below
     } while (nh_->now().seconds() < end_time);
