@@ -35,7 +35,7 @@ This ROS2 (Jazzy) package, uses the inertial-sense-sdk as a submodule. Clone thi
 ```bash
 mkdir -p ros2_ws/src
 cd ros2_ws/src
-git clone https://github.com/Cyclone-Robosub/inertial-sense-sdk.git
+git clone https://github.com/inertialsense/inertial-sense-sdk
 cd inertial-sense-sdk
 git submodule update --init --recursive
 cd ..
