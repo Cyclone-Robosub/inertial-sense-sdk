@@ -52,6 +52,8 @@ InertialSenseROS::InertialSenseROS(YAML::Node paramNode, bool configFlashParamet
     // Should always be enabled by default
     rs_.did_ins1.enabled = true;
     rs_.did_ins1.topic = "did_ins1";
+    rs_.odom_ins_ned.enabled = true;
+    rs_.odom_ins_ned.topic = "odom_ned";
     rs_.magnetometer.enabled = true;
     rs_.magnetometer.topic = "mag";
     rs_.imu.enabled = true;

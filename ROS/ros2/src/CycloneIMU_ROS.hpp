@@ -44,13 +44,17 @@ class CycloneIMU_ROS : public rclcpp::Node {
 
         mag_subscription_ = this->create_subscription<sensor_msgs::msg::MagneticField>("mag", 10, std::bind(&CycloneIMU_ROS::mag_callback, this, std::placeholders::_1));
 
+        odom_sub = this->create_subscription<nav_msgs::msg::Odometry>("odom_ned", 10, std::bind(&CycloneIMU_ROS::odom_callback, this, std::placeholders::_1));
+
         std::thread inertialSenseROS(SetupInertialSenseROS);
         inertialSenseROS.detach();
+
     }
 
    private:
-    void imu_callback(const std::shared_ptr<const sensor_msgs::msg::Imu>& msg);
-    void mag_callback(const std::shared_ptr<const sensor_msgs::msg::MagneticField>& msg);
+    void imu_callback(const std::shared_ptr<const sensor_msgs::msg::Imu> &msg);
+    void mag_callback(const std::shared_ptr<const sensor_msgs::msg::MagneticField> &msg);
+    void odom_callback(const std::shared_ptr<const nav_msgs::msg::Odometry> &msg);
     rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr odom_sub;
     rclcpp::Subscription<sensor_msgs::msg::MagneticField>::SharedPtr mag_subscription_;
     rclcpp::Subscription<sensor_msgs::msg::Imu>::SharedPtr imu_subscription_;
@@ -62,7 +66,7 @@ class CycloneIMU_ROS : public rclcpp::Node {
     double linear_acceleration_x = 0.0;
     double linear_acceleration_y = 0.0;
     double linear_acceleration_z = 0.0;
-
+    float somerandomValue = 0.0;
     // Magnetic field data members
     double mag_field_x = 0.0;
     double mag_field_y = 0.0;
