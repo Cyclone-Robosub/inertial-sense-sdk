@@ -13,6 +13,7 @@ find_package(sensor_msgs REQUIRED)
 find_package(nav_msgs REQUIRED)
 find_package(diagnostic_msgs REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
+find_package(custom_interfaces REQUIRED)
 find_package(ament_cmake_gtest REQUIRED)
 find_package(custom_interfaces REQUIRED)
 find_package(Threads)
@@ -56,11 +57,11 @@ rosidl_generate_interfaces(${PROJECT_NAME}
     "msg/DIDINS4.msg"
     "srv/FirmwareUpdate.srv"
     "srv/RefLLAUpdate.srv"
-    DEPENDENCIES std_msgs geometry_msgs diagnostic_msgs builtin_interfaces
+    DEPENDENCIES std_msgs geometry_msgs custom_interfaces diagnostic_msgs builtin_interfaces
 )
 ament_export_include_directories(shared/include)
 ament_export_libraries(inertial_sense_ros2)
-ament_export_dependencies(rclcpp custom_interfaces sensor_msgs geometry_msgs std_msgs diagnostic_msgs)
+ament_export_dependencies(rclcpp sensor_msgs geometry_msgs custom_interfaces std_msgs diagnostic_msgs)
 
 # We don't need the example projects
 set(IGNORE_EXAMPLE_PROJECTS 1)
@@ -95,12 +96,15 @@ add_executable(${PROJECT_NAME}_node
 
 rosidl_get_typesupport_target(cpp_typesupport_target "${PROJECT_NAME}" "rosidl_typesupport_cpp")
 target_link_libraries(${PROJECT_NAME}_node "${cpp_typesupport_target}")
-ament_target_dependencies(${PROJECT_NAME}_node rclcpp std_msgs custom_interfaces geometry_msgs nav_msgs diagnostic_msgs sensor_msgs std_srvs)
+ament_target_dependencies(${PROJECT_NAME}_node rclcpp std_msgs geometry_msgs custom_interfaces nav_msgs diagnostic_msgs sensor_msgs std_srvs)
 target_link_libraries(${PROJECT_NAME}_node InertialSenseSDK ${YAML_CPP_LIBRARIES} pthread)
 
 
 
 rosidl_get_typesupport_target(cpp_typesupport_target "${PROJECT_NAME}" "rosidl_typesupport_cpp")
+target_link_libraries(test_${PROJECT_NAME} "${cpp_typesupport_target}")
+ament_target_dependencies(test_${PROJECT_NAME} rclcpp std_msgs geometry_msgs custom_interfaces nav_msgs diagnostic_msgs sensor_msgs std_srvs)
+target_link_libraries(test_${PROJECT_NAME} InertialSenseSDK ${YAML_CPP_LIBRARIES} pthread)
 
 #link_directories(/home/s/Inertial_Sense/imx/ros2_ws/src/inertial-sense-sdk)
 install(TARGETS ${PROJECT_NAME}_node

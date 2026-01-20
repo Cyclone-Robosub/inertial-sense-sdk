@@ -2,7 +2,6 @@
 
 #include <iostream>
 std::chrono::time_point startTime = std::chrono::steady_clock::now();
-;
 int main(int argc, char* argv[]) {
     std::cout << "Start of Cyclone Robosub IMU API" << std::endl;
     rclcpp::init(argc, argv);
