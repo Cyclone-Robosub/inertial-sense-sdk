@@ -51,10 +51,14 @@ void odometryIdentity(nav_msgs::msg::Odometry& msg_odom) {
 InertialSenseROS::InertialSenseROS(YAML::Node paramNode, bool configFlashParameters): nh_(rclcpp::Node::make_shared("nh_"))
 {
     // Should always be enabled by default
-    rs_.imu.topic = "imu";
-    rs_.imu.enabled = true;
+    rs_.did_ins1.enabled = true;
+    rs_.did_ins1.topic = "did_ins1";
+    rs_.odom_ins_ned.enabled = true;
+    rs_.odom_ins_ned.topic = "odom_ned";
     rs_.magnetometer.enabled = true;
     rs_.magnetometer.topic = "mag";
+    rs_.imu.enabled = true;
+    rs_.imu.topic = "imu";
 
    //if (ros::console::set_logger_level(ROSCONSOLE_DEFAULT_NAME, ros::console::levels::Debug))
    //{
@@ -142,7 +146,7 @@ void InertialSenseROS::initializeROS()
 
     if (rs_.did_ins2.enabled)               { rs_.did_ins2.pub_didins2      = nh_->create_publisher<inertial_sense_ros2::msg::DIDINS2>(rs_.did_ins2.topic, 1); }
     if (rs_.did_ins4.enabled)               { rs_.did_ins4.pub_didins4      = nh_->create_publisher<inertial_sense_ros2::msg::DIDINS4>(rs_.did_ins4.topic, 1); }
-    if (rs_.odom_ins_ned.enabled)           { rs_.odom_ins_ned.pub_odometry  = nh_->create_publisher<nav_msgs::msg::Odometry>(rs_.odom_ins_ned.topic, 1); }
+    if (rs_.odom_ins_ned.enabled)           { std::cout << "here" << std::endl;rs_.odom_ins_ned.pub_odometry  = nh_->create_publisher<nav_msgs::msg::Odometry>(rs_.odom_ins_ned.topic, 1); }
     if (rs_.odom_ins_enu.enabled)           { rs_.odom_ins_enu.pub_odometry  = nh_->create_publisher<nav_msgs::msg::Odometry>(rs_.odom_ins_enu.topic, 1); }
     if (rs_.odom_ins_ecef.enabled)          { rs_.odom_ins_ecef.pub_odometry = nh_->create_publisher<nav_msgs::msg::Odometry>(rs_.odom_ins_ecef.topic, 1); }
     if (rs_.inl2_states.enabled)            { rs_.inl2_states.pub_inl2   = nh_->create_publisher<inertial_sense_ros2::msg::INL2States>(rs_.inl2_states.topic, 1); }
