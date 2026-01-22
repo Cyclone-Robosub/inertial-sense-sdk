@@ -53,3 +53,6 @@ void CycloneIMU_ROS::odom_callback(const std::shared_ptr<const nav_msgs::msg::Od
         }
     }
 }
+void CycloneIMU_ROS::pressure_callback(const std::shared_ptr<sensor_msgs::msg::FluidPressure> msg){
+
+}
