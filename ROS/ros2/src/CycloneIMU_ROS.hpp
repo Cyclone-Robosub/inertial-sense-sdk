@@ -10,6 +10,8 @@
 #include "sensor_msgs/msg/imu.hpp"
 #include "sensor_msgs/msg/fluid_pressure.hpp"
 #include "std_msgs/std_msgs/msg/string.hpp"
+#include <atomic>
+#include <memory>
 std::string params = "topic: \"inertialsense\"\n"
                        "port: [/dev/serial/by-id/usb-STMicroelectronics_STM32_Virtual_ComPort_205D36773430-if00]\n"
                        "baudrate: 921600\n"
@@ -37,7 +39,7 @@ void SetupInertialSenseROS() {
     }
     InertialSenseROS IMUROS = InertialSenseROS(nodesomething);
     IMUROS.initialize();
-    while(true){ 
+    while(true){
     rclcpp::spin_some(IMUROS.nh_);
     IMUROS.update();
     }
@@ -49,27 +51,50 @@ class CycloneIMU_ROS : public rclcpp::Node {
         auto commandOptions = rclcpp::SubscriptionOptions();
         commandOptions.callback_group = callbackSensors;
 
-        imu_subscription_ = this->create_subscription<sensor_msgs::msg::Imu>("imu", 10, std::bind(&CycloneIMU_ROS::imu_callback, this, std::placeholders::_1), commandOptions );
+        imu_subscription_ = this->create_subscription<sensor_msgs::msg::Imu>(
+            "imu", 10,
+            std::bind(&CycloneIMU_ROS::imu_callback, this, std::placeholders::_1),
+            commandOptions);
 
-        mag_subscription_ = this->create_subscription<sensor_msgs::msg::MagneticField>("mag", 10, std::bind(&CycloneIMU_ROS::mag_callback, this, std::placeholders::_1), commandOptions );
+        mag_subscription_ = this->create_subscription<sensor_msgs::msg::MagneticField>(
+            "mag", 10,
+            std::bind(&CycloneIMU_ROS::mag_callback, this, std::placeholders::_1),
+            commandOptions);
 
-        odom_sub = this->create_subscription<nav_msgs::msg::Odometry>("odom_ned", 10, std::bind(&CycloneIMU_ROS::odom_callback, this, std::placeholders::_1), commandOptions );
-        pressure_sub = this->create_subscription<sensor_msgs::msg::FluidPressure>("pressure", 10, std::bind(&CycloneIMU_ROS::pressure_callback, this, std::placeholders::_1), commandOptions );
-        std::thread inertialSenseROS(SetupInertialSenseROS);
-        inertialSenseROS.detach();
+        odom_sub = this->create_subscription<nav_msgs::msg::Odometry>(
+            "odom_ned", 10,
+            std::bind(&CycloneIMU_ROS::odom_callback, this, std::placeholders::_1),
+            commandOptions);
+
+        pressure_sub = this->create_subscription<sensor_msgs::msg::FluidPressure>(
+            "pressure", 10,
+            std::bind(&CycloneIMU_ROS::pressure_callback, this, std::placeholders::_1),
+            commandOptions);
+
+        imu_publisher = this->create_publisher<custom_interfaces::msg::Imu>("imu_custom", 10);
+
+        inertialSenseROS = std::thread([this]() { SetupInertialSenseROS(); });
+        PublisherThread = std::thread([this]() { Controls_Publisher(); });
     }
-
    private:
-    void imu_callback(const std::shared_ptr<const sensor_msgs::msg::Imu>& msg);
+    void imu_callback(std::shared_ptr<sensor_msgs::msg::Imu> msg);
     void mag_callback(const std::shared_ptr<const sensor_msgs::msg::MagneticField>& msg);
     void odom_callback(const std::shared_ptr<const nav_msgs::msg::Odometry>& msg);
     void pressure_callback(const std::shared_ptr<sensor_msgs::msg::FluidPressure> msg);
+    void Controls_Publisher();
+
     rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr odom_sub;
     rclcpp::Subscription<sensor_msgs::msg::MagneticField>::SharedPtr mag_subscription_;
     rclcpp::Subscription<sensor_msgs::msg::Imu>::SharedPtr imu_subscription_;
     rclcpp::Publisher<custom_interfaces::msg::Imu>::SharedPtr imu_publisher;
     rclcpp::Subscription<sensor_msgs::msg::FluidPressure>::SharedPtr pressure_sub;
     rclcpp::CallbackGroup::SharedPtr callbackSensors;
+
+    std::thread inertialSenseROS;
+    std::thread PublisherThread;
+    std::shared_ptr<sensor_msgs::msg::Imu> imu_ptr;
+    std::mutex imu_mutex;
+    custom_interfaces::msg::Imu custom_msg = custom_interfaces::msg::Imu();
 
     double angular_velocity_x = 0.0;
     double angular_velocity_y = 0.0;
@@ -78,7 +103,6 @@ class CycloneIMU_ROS : public rclcpp::Node {
     double linear_acceleration_y = 0.0;
     double linear_acceleration_z = 0.0;
     float somerandomValue = 0.0;
-    // Magnetic field data members
     double mag_field_x = 0.0;
     double mag_field_y = 0.0;
     double mag_field_z = 0.0;
