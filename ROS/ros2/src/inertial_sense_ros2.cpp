@@ -58,6 +58,7 @@ void odometryIdentity(nav_msgs::msg::Odometry& msg_odom) {
 InertialSenseROS::InertialSenseROS(YAML::Node paramNode, bool configFlashParameters) : nh_(rclcpp::Node::make_shared("nh_")) {
     rs_.did_ins1.enabled = true;
     rs_.did_ins1.topic = "did_ins1"; // Should always be enabled by default
+    rs_.gps1.enabled = true;
     rs_.odom_ins_ned.enabled = true;
     rs_.odom_ins_ned.topic = "odom_ned";
     rs_.magnetometer.enabled = true;
@@ -372,17 +373,17 @@ void InertialSenseROS::load_params(YAML::Node& node) {
     int rs_gps1_period = nh_->declare_parameter<int>("msg/gps1/period", 1);
     ph.msgParams(rs_.gps1, "pos_vel", "gps1/pos_vel", true, rs_gps1_period, rs_gps1_enable);
 
-    bool rs_gps1_info_enable = nh_->declare_parameter<bool>("msg/gps1_info/enable", false);
+    bool rs_gps1_info_enable = nh_->declare_parameter<bool>("msg/gps1_info/enable", true);
     int rs_gps1_info_period = nh_->declare_parameter<int>("msg/gps1_info/period", 1);
-    ph.msgParams(rs_.gps1_info, "info", "gps1/info", false, rs_gps1_info_period, rs_gps1_info_enable);
+    ph.msgParams(rs_.gps1_info, "info", "gps1/info", true, rs_gps1_info_period, rs_gps1_info_enable);
 
     bool rs_gps1_raw_enable = nh_->declare_parameter<bool>("msg/gps1_raw/enable", false);
     int rs_gps1_raw_period = nh_->declare_parameter<int>("msg/gps1_raw/period", 1);
     ph.msgParams(rs_.gps1_raw, "raw", "gps1/raw", false, rs_gps1_raw_period, rs_gps1_raw_enable);
 
-    bool rs_gps1_navsatfix_enable = nh_->declare_parameter<bool>("msg/gps1_navsatfix/enable", false);
+    bool rs_gps1_navsatfix_enable = nh_->declare_parameter<bool>("msg/gps1_navsatfix/enable", true);
     int rs_gps1_navsatfix_period = nh_->declare_parameter<int>("msg/gps1_navsatfix/period", 1);
-    ph.msgParams(rs_.gps1_navsatfix, "navsatfix", "gps1/NavSatFix", false, rs_gps1_navsatfix_period, rs_gps1_navsatfix_enable);
+    ph.msgParams(rs_.gps1_navsatfix, "navsatfix", "gps1/NavSatFix", true, rs_gps1_navsatfix_period, rs_gps1_navsatfix_enable);
 
     gps1Node["messages"] = gps1Msgs;
     node["gps1"] = gps1Node;
