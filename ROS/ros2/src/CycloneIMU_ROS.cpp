@@ -37,24 +37,22 @@ void CycloneIMU_ROS::mag_callback(std::shared_ptr<sensor_msgs::msg::MagneticFiel
     mag_ptr = msg;
     lock.unlock();
 }
-
+std::atomic<bool> isOdomBenchmarkCompletedODOM = false;
 void CycloneIMU_ROS::odom_callback(std::shared_ptr<nav_msgs::msg::Odometry> msg)
 {
+
     std::unique_lock<std::mutex> lock(odom_mutex);
     odom_ptr = msg;
     somerandomValue = msg->twist.twist.linear.x;
     lock.unlock();
    std:: cout << somerandomValue << std::endl;
     odomCount++;
-    if (odomCount > 10 && isBenchmarkCompletedIMU == false)
+    if(isBenchmarkCompletedIMU == true && isOdomBenchmarkCompletedODOM == false)
     {
         auto endTime = std::chrono::steady_clock::now();
         auto duration = std::chrono::duration<double>(endTime - startTime);
-        std::cout << "It took ODOM " << duration.count() << " seconds.\n";
-        if (isBenchmarkCompletedIMU)
-        {
-            std::cout << "Fail to catch up to IMU" << std::endl;
-        }
+        std::cout << "It took " << duration.count() << " seconds to receive 100 odom messages.\n" << odomCount;
+        isOdomBenchmarkCompletedODOM = true;
     }
 }
 
