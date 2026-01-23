@@ -78,9 +78,9 @@ class CycloneIMU_ROS : public rclcpp::Node {
     }
    private:
     void imu_callback(std::shared_ptr<sensor_msgs::msg::Imu> msg);
-    void mag_callback(const std::shared_ptr<const sensor_msgs::msg::MagneticField>& msg);
-    void odom_callback(const std::shared_ptr<const nav_msgs::msg::Odometry>& msg);
-    void pressure_callback(const std::shared_ptr<sensor_msgs::msg::FluidPressure> msg);
+    void mag_callback(std::shared_ptr<sensor_msgs::msg::MagneticField> msg);
+    void odom_callback(std::shared_ptr< nav_msgs::msg::Odometry> msg);
+    void pressure_callback(std::shared_ptr<sensor_msgs::msg::FluidPressure> msg);
     void Controls_Publisher();
 
     rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr odom_sub;
@@ -93,9 +93,15 @@ class CycloneIMU_ROS : public rclcpp::Node {
     std::thread inertialSenseROS;
     std::thread PublisherThread;
     std::shared_ptr<sensor_msgs::msg::Imu> imu_ptr;
+    std::shared_ptr<nav_msgs::msg::Odometry> odom_ptr;
+    std::shared_ptr<sensor_msgs::msg::MagneticField> mag_ptr;
+    std::shared_ptr<sensor_msgs::msg::FluidPressure> pressure_ptr;
     std::mutex imu_mutex;
+    std::mutex odom_mutex;
+    std::mutex mag_mutex;
+    std::mutex pressure_mutex;
     custom_interfaces::msg::Imu custom_msg = custom_interfaces::msg::Imu();
-
+    std::atomic<int> odomCount;
     double angular_velocity_x = 0.0;
     double angular_velocity_y = 0.0;
     double angular_velocity_z = 0.0;
