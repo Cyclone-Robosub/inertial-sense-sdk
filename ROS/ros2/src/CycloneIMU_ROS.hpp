@@ -28,7 +28,11 @@ std::string params = "topic: \"inertialsense\"\n"
                        "    imu:              # Publish IMU angular rates and linear acceleration \n"
                        "      topic: \"imu\"\n"
                        "      enable: \"true\"\n"
-                       "      period: 1\n";
+                       "      period: 1\n"
+                       "    mag:              # Publish Magnetometer data\n"
+                       "      topic: \"mag\"\n"
+                       "      enable: true\n"
+                       "   ";
 YAML::Node nodesomething;
 void SetupInertialSenseROS() {
     try {
@@ -62,12 +66,12 @@ class CycloneIMU_ROS : public rclcpp::Node {
             commandOptions);
 
         odom_sub = this->create_subscription<nav_msgs::msg::Odometry>(
-            "odom_ned", 10,
+            "odom_ins_ned", 10,
             std::bind(&CycloneIMU_ROS::odom_callback, this, std::placeholders::_1),
             commandOptions);
 
         pressure_sub = this->create_subscription<sensor_msgs::msg::FluidPressure>(
-            "pressure", 10,
+            "baro", 10,
             std::bind(&CycloneIMU_ROS::pressure_callback, this, std::placeholders::_1),
             commandOptions);
 

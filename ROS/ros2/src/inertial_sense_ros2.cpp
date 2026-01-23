@@ -146,7 +146,7 @@ void InertialSenseROS::initializeROS() {
 
     if (rs_.did_ins2.enabled)               { rs_.did_ins2.pub_didins2      = nh_->create_publisher<inertial_sense_ros2::msg::DIDINS2>(rs_.did_ins2.topic, 1); }
     if (rs_.did_ins4.enabled)               { rs_.did_ins4.pub_didins4      = nh_->create_publisher<inertial_sense_ros2::msg::DIDINS4>(rs_.did_ins4.topic, 1); }
-    if (rs_.odom_ins_ned.enabled)           { std::cout << "here" << std::endl;rs_.odom_ins_ned.pub_odometry  = nh_->create_publisher<nav_msgs::msg::Odometry>(rs_.odom_ins_ned.topic, 1); }
+    if (rs_.odom_ins_ned.enabled)           { std::cout << "here ins creation NED" << std::endl;rs_.odom_ins_ned.pub_odometry  = nh_->create_publisher<nav_msgs::msg::Odometry>(rs_.odom_ins_ned.topic, 1); }
     if (rs_.odom_ins_enu.enabled)           { rs_.odom_ins_enu.pub_odometry  = nh_->create_publisher<nav_msgs::msg::Odometry>(rs_.odom_ins_enu.topic, 1); }
     if (rs_.odom_ins_ecef.enabled)          { rs_.odom_ins_ecef.pub_odometry = nh_->create_publisher<nav_msgs::msg::Odometry>(rs_.odom_ins_ecef.topic, 1); }
     if (rs_.inl2_states.enabled)            { rs_.inl2_states.pub_inl2   = nh_->create_publisher<inertial_sense_ros2::msg::INL2States>(rs_.inl2_states.topic, 1); }
@@ -275,7 +275,7 @@ void InertialSenseROS::load_params(YAML::Node& node) {
     YAML::Node sensorsNode = ph.node(node, "sensors");
     YAML::Node sensorsMsgs = ph.node(sensorsNode, "messages", 2);
 
-    bool imu_enable = nh_->declare_parameter<bool>("msg/imu/enable", false);
+    bool imu_enable = nh_->declare_parameter<bool>("msg/imu/enable", true);
     int imu_period = nh_->declare_parameter<int>("msg/imu/period", 1);
     ph.msgParams(rs_.imu, "imu", "", false, imu_period, imu_enable);
 
@@ -283,13 +283,13 @@ void InertialSenseROS::load_params(YAML::Node& node) {
     int pimu_period = nh_->declare_parameter<int>("msg/pimu/period", 1);
     ph.msgParams(rs_.pimu, "pimu", "", false, pimu_period, pimu_enable);
 
-    bool mag_enable = nh_->declare_parameter<bool>("msg/mag/enable", false);
+    bool mag_enable = nh_->declare_parameter<bool>("msg/mag/enable", true);
     int mag_period = nh_->declare_parameter<int>("msg/mag/period", 1);
-    ph.msgParams(rs_.magnetometer, "magnetometer", "mag", false, mag_period, mag_enable);
+    ph.msgParams(rs_.magnetometer, "magnetometer", "mag", true, mag_period, mag_enable);
 
-    bool baro_enable = nh_->declare_parameter<bool>("msg/baro/enable", false);
+    bool baro_enable = nh_->declare_parameter<bool>("msg/baro/enable", true);
     int baro_period = nh_->declare_parameter<int>("msg/baro/period", 1);
-    ph.msgParams(rs_.barometer, "barometer", "baro", false, baro_period, baro_enable);
+    ph.msgParams(rs_.barometer, "barometer", "baro", true, baro_period, baro_enable);
 
     ph.msgParams(rs_.strobe_in, "strobe_in");
     node["sensors"]["messages"] = sensorsMsgs;
@@ -335,9 +335,9 @@ void InertialSenseROS::load_params(YAML::Node& node) {
     int rs_odom_ins_ecef_period = nh_->declare_parameter<int>("msg/odom_ins_ecef/period", 1);
     ph.msgParams(rs_.odom_ins_ecef, "odom_ins_ecef", "", false, rs_odom_ins_ecef_period, rs_odom_ins_ecef_enable);
 
-    bool did_ins1_enable = nh_->declare_parameter<bool>("msg/did_ins1/enable", false);
+    bool did_ins1_enable = nh_->declare_parameter<bool>("msg/did_ins1/enable", true);
     int did_ins1_period = nh_->declare_parameter<int>("msg/did_ins1/period", 1);
-    ph.msgParams(rs_.did_ins1, "msg/did_ins1/enable", "ins_eul_uvw_ned", false, did_ins1_period, did_ins1_enable);
+    ph.msgParams(rs_.did_ins1, "msg/did_ins1/enable", "ins_eul_uvw_ned", true, did_ins1_period, did_ins1_enable);
 
     bool did_ins2_enable = nh_->declare_parameter<bool>("msg/did_ins2/enable", false);
     int did_ins2_period = nh_->declare_parameter<int>("msg/did_ins2/period", 1);
